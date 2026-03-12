@@ -1,0 +1,9 @@
+{
+  "name": "tzhos-toolkit",
+  "version": "0.6.0",
+  "description": "tzhOS personal Cowork toolkit — session init, healthcheck, failure archival, cross-audit (GGP), synchronous Claude Code bridge for PPR v2.1 multi-domain Swift/iOS development.",
+  "author": {
+    "name": "tzhOS"
+  },
+  "keywords": ["session-init", "healthcheck", "failure-log", "diagnostics", "audit", "ggp", "codex-bridge", "swift", "ios", "ppr"]
+}
