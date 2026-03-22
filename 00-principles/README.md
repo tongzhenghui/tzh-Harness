@@ -2,6 +2,7 @@
 
 > 来源：SUPERFACTORY.md + SAAC-001 公理体系 + 实践沉淀
 > 治理归属：tzhOS CHARTER
+> 哲学锚点：P3/P5 是 MIRA-001「由下而上生长」在工程方法论中的展开（参见 `tzhOS/MIRA-001.md §4`）
 > 版本：1.0.0
 
 ## P1 — Plan-Then-Execute（先规划后执行）
