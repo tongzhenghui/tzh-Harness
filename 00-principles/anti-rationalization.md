@@ -123,3 +123,5 @@ AI Agent 在压力下会**合理化**跳过规则——这不是 bug，是训练
 - **Cialdini, R. B. (2021).** *Influence: The Psychology of Persuasion.* 七个说服原则
 - **Meincke et al. (2025).** N=28,000 LLM 对话实验。Authority + Commitment + Scarcity 组合最有效。合规率 33% → 72%（p < .001）
 - LLM 是"类人的"（parahuman）——训练数据中的说服模式对 LLM 同样有效
+
+详细原则解读与按 Skill 类型的应用指南，参见：`persuasion-principles.md`（同目录）
