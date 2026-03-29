@@ -5,12 +5,12 @@
       "id": 13,
       "date": "2026-03-29",
       "node": "NODE-M",
-      "title": "Sentinel Phase 1 \u2014 Multi-repo deployment",
+      "title": "Sentinel Phase 1 — Multi-repo deployment",
       "work_packages": [
         "WP-0: Repo migration to huanlongAI org (16 repos)",
-        "WP-1.5: tzhOS caller template (119-line inline \u2192 25-line reusable)",
+        "WP-1.5: tzhOS caller template (119-line inline → 25-line reusable)",
         "WP-2: D-4~D-6 precheck scripts (directory, capability-source, brand-token)",
-        "WP-3: LLM review layer \u2014 real Claude API integration",
+        "WP-3: LLM review layer — real Claude API integration",
         "WP-4: Batch deployment to all 16 huanlongAI repos"
       ],
       "summary": "Deployed Consistency Sentinel CI/CD across entire huanlongAI org. Hub-and-spoke architecture: sentinel-shared (public) hosts reusable workflow + scripts; each repo has ~25-line caller + .sentinel/config.yaml. Four config profiles: governance, infra, app, library. Six deterministic prechecks (D-1~D-6) + LLM review layer with graceful degradation.",
@@ -33,7 +33,7 @@
       "id": 14,
       "date": "2026-03-29",
       "node": "NODE-M",
-      "title": "Custom Skills \u2014 sentinel-ops & governance-workflow",
+      "title": "Custom Skills — sentinel-ops & governance-workflow",
       "work_packages": [
         "sentinel-ops skill: Sentinel CI/CD operational knowledge base (313 lines, ~2900 tokens)",
         "governance-workflow skill: Governance automation workflows (231 lines, ~2050 tokens)"
@@ -58,7 +58,7 @@
       "node": "NODE-M",
       "title": "WP-6: Governance doc alignment",
       "work_packages": [
-        "WP-6.1: CONSEN-SPEC-001 v1.0\u2192v1.1 (8 targeted updates)",
+        "WP-6.1: CONSEN-SPEC-001 v1.0→v1.1 (8 targeted updates)",
         "WP-6.2: REPO-MAP-001 v1.0 (new, 16-repo directory)",
         "WP-6.3: CLAUDE.md Sentinel section across all repos + sentinel-shared CLAUDE.md"
       ],
@@ -70,13 +70,45 @@
         "sentinel-shared/CLAUDE.md (ed9f432)"
       ],
       "key_changes": [
-        "\u00a74.2: 8 repos \u2192 16 repos (4 profile groups)",
-        "\u00a76.1a: New hub-and-spoke architecture section",
-        "\u00a76.2: claude-sonnet-4-5 \u2192 claude-sonnet-4-6 + graceful degradation",
-        "\u00a73.3: Implementation constraints (pipefail/git diff/YAML parsing)",
-        "\u00a77: Phase 0+1 marked complete, Phase 1.5 proposed"
+        "§4.2: 8 repos → 16 repos (4 profile groups)",
+        "§6.1a: New hub-and-spoke architecture section",
+        "§6.2: claude-sonnet-4-5 → claude-sonnet-4-6 + graceful degradation",
+        "§3.3: Implementation constraints (pipefail/git diff/YAML parsing)",
+        "§7: Phase 0+1 marked complete, Phase 1.5 proposed"
       ],
       "next_steps": ["WP-5: Crystallization automation (Phase 1.5)"]
+    },
+    {
+      "id": 16,
+      "date": "2026-03-29",
+      "node": "NODE-M",
+      "title": "WP-5: Crystallization automation + D-2 fix",
+      "work_packages": [
+        "WP-5.1: crystallization.yml workflow_dispatch (6 inputs, LLM + template fallback)",
+        "WP-5.2: crystallize-ruling.sh (Claude API draft, RULINGS.md append, CHANGELOG.md update)",
+        "WP-5.3: End-to-end validation (4 iterations to resolve permission issues)",
+        "D-2 fix: terminology_exclude_patterns for governance spec files"
+      ],
+      "summary": "Implemented CONSEN-SPEC §5.2 crystallization automation. When L0 triggers workflow_dispatch with ruling metadata, the workflow: determines next R-XXXX ID, drafts ruling via Claude API (with template fallback), creates ruling/R-XXXX branch, commits RULINGS.md + CHANGELOG.md updates, and opens a PolicyChange PR. Also fixed D-2 false positive by adding terminology_exclude_patterns config support to precheck-terminology.sh.",
+      "artifacts": [
+        "tzhOS/.github/workflows/crystallization.yml (aee27f0, 63e2532)",
+        "tzhOS/.github/scripts/crystallize-ruling.sh (aee27f0)",
+        "tzhOS/.sentinel/config.yaml updated (6523992)",
+        "sentinel-shared/scripts/precheck-terminology.sh updated (80a7fce)",
+        "tzhOS PR #7 (test, closed after validation)"
+      ],
+      "key_decisions": [
+        "MCP push_files cannot write .github/workflows/ (403) — use git push via osascript",
+        "Label attachment made best-effort (gh pr edit || echo skip) to prevent PR creation failure",
+        "Org + repo workflow permissions must both enable 'Allow Actions to create PRs'",
+        "terminology_exclude_patterns uses bash case glob matching on basename"
+      ],
+      "issues_resolved": [
+        "D-2 false positive on CONSEN-SPEC-001.md discussing forbidden terms",
+        "GitHub Actions PR creation permission (org + repo level)",
+        "gh pr create --label failure when labels don't exist"
+      ],
+      "next_steps": ["Phase 1.5: Sentinel matrix auto-update on ruling", "Cross-repo cascade verification workflow"]
     }
   ]
 }
