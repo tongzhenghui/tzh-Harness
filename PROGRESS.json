@@ -38,18 +38,13 @@
         "sentinel-ops skill: Sentinel CI/CD operational knowledge base (313 lines, ~2900 tokens)",
         "governance-workflow skill: Governance automation workflows (231 lines, ~2050 tokens)"
       ],
-      "summary": "Created and packaged two domain-specific Cowork skills encoding all operational knowledge from Sentinel Phase 1. sentinel-ops covers deployment, debugging, config profiles, script patterns, and batch operations. governance-workflow covers ruling creation, spec sign-off, PROGRESS tracking, Obsidian sync, and cascade verification. Both installed and verified in Cowork environment.",
+      "summary": "Created and packaged two domain-specific Cowork skills encoding all operational knowledge from Sentinel Phase 1.",
       "artifacts": [
         "sentinel-ops.skill (packaged)",
         "governance-workflow.skill (packaged)",
         "cowork-skills/sentinel-ops/SKILL.md (archived)",
         "cowork-skills/governance-workflow/SKILL.md (archived)"
       ],
-      "context_impact": {
-        "metadata_overhead": "~130 words always-loaded (name+description)",
-        "body_on_trigger": "~4950 tokens combined (loaded only when triggered)",
-        "assessment": "No negative impact on Harness Engineering context budget"
-      },
       "next_steps": ["WP-5: Crystallization automation", "WP-6: Governance doc alignment"]
     },
     {
@@ -62,19 +57,11 @@
         "WP-6.2: REPO-MAP-001 v1.0 (new, 16-repo directory)",
         "WP-6.3: CLAUDE.md Sentinel section across all repos + sentinel-shared CLAUDE.md"
       ],
-      "summary": "Aligned all governance documents with Phase 1 deployment reality. CONSEN-SPEC updated with hub-and-spoke architecture, 16-repo scope, 4 profiles, graceful degradation, implementation constraints, and Phase 0/1 completion markers. New REPO-MAP provides authoritative org-level repo directory. All repo CLAUDE.md files confirmed to include Sentinel section. sentinel-shared got its own CLAUDE.md.",
+      "summary": "Aligned all governance documents with Phase 1 deployment reality.",
       "artifacts": [
         "tzhOS/CONSEN-SPEC-001.md v1.1 (0870889)",
         "tzhOS/REPO-MAP.md v1.0 (0870889)",
-        "tzhOS/CHANGELOG.md updated",
         "sentinel-shared/CLAUDE.md (ed9f432)"
-      ],
-      "key_changes": [
-        "§4.2: 8 repos → 16 repos (4 profile groups)",
-        "§6.1a: New hub-and-spoke architecture section",
-        "§6.2: claude-sonnet-4-5 → claude-sonnet-4-6 + graceful degradation",
-        "§3.3: Implementation constraints (pipefail/git diff/YAML parsing)",
-        "§7: Phase 0+1 marked complete, Phase 1.5 proposed"
       ],
       "next_steps": ["WP-5: Crystallization automation (Phase 1.5)"]
     },
@@ -89,26 +76,50 @@
         "WP-5.3: End-to-end validation (4 iterations to resolve permission issues)",
         "D-2 fix: terminology_exclude_patterns for governance spec files"
       ],
-      "summary": "Implemented CONSEN-SPEC §5.2 crystallization automation. When L0 triggers workflow_dispatch with ruling metadata, the workflow: determines next R-XXXX ID, drafts ruling via Claude API (with template fallback), creates ruling/R-XXXX branch, commits RULINGS.md + CHANGELOG.md updates, and opens a PolicyChange PR. Also fixed D-2 false positive by adding terminology_exclude_patterns config support to precheck-terminology.sh.",
+      "summary": "Implemented CONSEN-SPEC §5.2 crystallization automation. Fixed D-2 false positive.",
       "artifacts": [
         "tzhOS/.github/workflows/crystallization.yml (aee27f0, 63e2532)",
         "tzhOS/.github/scripts/crystallize-ruling.sh (aee27f0)",
-        "tzhOS/.sentinel/config.yaml updated (6523992)",
-        "sentinel-shared/scripts/precheck-terminology.sh updated (80a7fce)",
-        "tzhOS PR #7 (test, closed after validation)"
+        "tzhOS/.sentinel/config.yaml (6523992)",
+        "sentinel-shared/scripts/precheck-terminology.sh (80a7fce)"
       ],
       "key_decisions": [
         "MCP push_files cannot write .github/workflows/ (403) — use git push via osascript",
-        "Label attachment made best-effort (gh pr edit || echo skip) to prevent PR creation failure",
-        "Org + repo workflow permissions must both enable 'Allow Actions to create PRs'",
-        "terminology_exclude_patterns uses bash case glob matching on basename"
+        "Label attachment made best-effort to prevent PR creation failure",
+        "Org + repo workflow permissions must both enable Actions PR creation"
       ],
-      "issues_resolved": [
-        "D-2 false positive on CONSEN-SPEC-001.md discussing forbidden terms",
-        "GitHub Actions PR creation permission (org + repo level)",
-        "gh pr create --label failure when labels don't exist"
+      "next_steps": ["Phase 2: Cross-repo cascade verification"]
+    },
+    {
+      "id": 17,
+      "date": "2026-03-29",
+      "node": "NODE-M",
+      "title": "WP-8: Cross-repo cascade verification (Phase 2)",
+      "work_packages": [
+        "WP-8.1: cascade-verify.yml design (fan-out + collect-results two-job architecture)",
+        "WP-8.2: Deploy cascade-verify.yml to sentinel-shared (7cd5266)",
+        "WP-8.3: Batch update 16 downstream callers with repository_dispatch trigger",
+        "WP-8.4: End-to-end test — 16/16 dispatch success, collect-results passed"
       ],
-      "next_steps": ["Phase 1.5: Sentinel matrix auto-update on ruling", "Cross-repo cascade verification workflow"]
+      "summary": "Implemented cross-repo cascade verification for the Sentinel hub-and-spoke system. When sentinel-shared scripts or reusable workflow change, cascade-verify.yml auto-dispatches sentinel-cascade events to all 16 downstream repos, waits 120s, then collects pass/fail results. Failures auto-create an issue in sentinel-shared. All 16 downstream repo callers updated with repository_dispatch trigger.",
+      "artifacts": [
+        "sentinel-shared/.github/workflows/cascade-verify.yml (7cd5266)",
+        "16 repos: consistency-sentinel.yml updated with repository_dispatch",
+        "sentinel-shared repo secret: CASCADE_TOKEN"
+      ],
+      "architecture": {
+        "trigger": "push to scripts/**|.github/workflows/consistency-sentinel.yml|matrix/**|profiles/**|prompts/** OR workflow_dispatch",
+        "fan_out": "curl POST /repos/{repo}/dispatches with event_type=sentinel-cascade",
+        "collect": "120s wait, then query /actions/runs?event=repository_dispatch for each repo",
+        "alerting": "Auto-create issue with cascade-failure label if any repo fails"
+      },
+      "key_decisions": [
+        "CASCADE_TOKEN (PAT with repo scope) required for cross-repo dispatch — GITHUB_TOKEN is repo-scoped",
+        "repository_dispatch event type 'sentinel-cascade' added to all downstream callers",
+        "120s wait is sufficient for most sentinel runs (avg ~15s per run)",
+        "Base64 transfer pattern used for osascript to avoid heredoc/triple-quote escaping issues"
+      ],
+      "next_steps": ["WP-7: Sentinel matrix auto-update on ruling", "WP-9: Sentinel dashboard", "Replace CASCADE_TOKEN OAuth with fine-grained PAT"]
     }
   ]
 }
