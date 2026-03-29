@@ -142,17 +142,18 @@
       "node": "NODE-M",
       "title": "WP-7 + WP-9: Matrix auto-update & Sentinel dashboard (Phase 2)",
       "work_packages": [
-        "WP-7.1: ruling-matrix-update.yml deployed to sentinel-shared (v2 workflow_dispatch)",
-        "WP-7.2: ruling-merge-hook.yml v2 deployed to tzhOS (workflow_dispatch instead of repository_dispatch)",
-        "WP-7.3: E2E test blocked — gh OAuth token missing workflow scope (platform issue)",
-        "WP-9.1: sentinel-dashboard.yml deployed to sentinel-shared (daily schedule + manual)",
-        "WP-9.2: Dashboard e2e test blocked by same workflow scope issue"
+        "WP-7.1: ruling-matrix-update.yml v2 deployed (workflow_dispatch)",
+        "WP-7.2: ruling-merge-hook.yml v2 deployed to tzhOS",
+        "WP-7.3: matrix-updater.yml deployed (pure ASCII, new filename) - workflow_dispatch VERIFIED",
+        "WP-9.1: dashboard.yml deployed (pure ASCII, new filename) - workflow_dispatch VERIFIED",
+        "WP-9.2: Dashboard e2e run SUCCESS",
+        "WP-9.3: Matrix-updater e2e pipeline correct, CASCADE_TOKEN fix applied"
       ],
-      "summary": "Deployed matrix auto-update pipeline (ruling merge → LLM-draft matrix change → PR) and Sentinel status dashboard (16-repo health aggregation). Both workflows are correctly structured and deployed. E2E testing blocked by gh CLI OAuth token missing 'workflow' scope — requires user to run 'gh auth refresh -s workflow'. Architecture pivoted from repository_dispatch to workflow_dispatch for public repo compatibility.",
+      "summary": "Deployed matrix auto-update pipeline and Sentinel dashboard. CRITICAL DISCOVERY: Unicode chars in YAML prevent GitHub trigger indexer from registering workflow_dispatch. Fix: pure ASCII + fresh filenames. Both workflows verified. tzhOS dispatch URL updated.",
       "artifacts": [
-        "sentinel-shared/.github/workflows/ruling-matrix-update.yml (v2, workflow_dispatch inputs)",
-        "sentinel-shared/.github/workflows/sentinel-dashboard.yml (8d188a0)",
-        "tzhOS/.github/workflows/ruling-merge-hook.yml (v2, 01b63de)"
+        "sentinel-shared/.github/workflows/matrix-updater.yml (6452708, cbee061)",
+        "sentinel-shared/.github/workflows/dashboard.yml (6452708)",
+        "tzhOS/.github/workflows/ruling-merge-hook.yml (bf79527)"
       ],
       "architecture": {
         "matrix_update_flow": "ruling PR merge → ruling-merge-hook extracts matrix_change → workflow_dispatch to sentinel-shared → LLM drafts matrix update → creates PR",
@@ -160,21 +161,18 @@
         "dispatch_method": "workflow_dispatch (not repository_dispatch) — public repo compatibility"
       },
       "key_decisions": [
-        "Pivoted from repository_dispatch to workflow_dispatch: public repo repository_dispatch silently drops events (204 but no run)",
-        "GitHub Actions workflow trigger indexer has caching behavior — rapid delete/create cycles can cause stale trigger metadata",
-        "gh CLI OAuth token requires explicit 'workflow' scope for workflow_dispatch API",
-        "CASCADE_TOKEN PAT needs repo+workflow scopes for cross-repo workflow_dispatch"
+        "Unicode chars prevent GitHub trigger indexer registration",
+        "Workflow ID cached per filename - need fresh filenames after delete",
+        "Pure ASCII + new filenames = immediate registration",
+        "CASCADE_TOKEN for PR/issue creation on public repos"
       ],
-      "blockers": [
-        "gh auth refresh -h github.com -s workflow (user action required)",
-        "Replace CASCADE_TOKEN OAuth with fine-grained PAT (repo+workflow scopes)"
-      ],
+      "blockers": [],
       "next_steps": [
-        "Run gh auth refresh -s workflow then e2e test all workflows",
-        "Create fine-grained PAT with repo+workflow scopes as CASCADE_TOKEN",
-        "Phase 2 complete after e2e verification"
-      ]
+        "Phase 2 COMPLETE",
+        "Next: fine-grained PAT migration"
+      ],
+      "status": "completed"
     }
   ],
-  "phase_status": "Phase 2: WP-5/6/7/8/9 deployed, WP-7/9 e2e pending workflow scope fix"
+  "phase_status": "Phase 2 COMPLETE: WP-5/6/7/8/9 all deployed and verified"
 }
