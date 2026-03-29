@@ -5,12 +5,12 @@
       "id": 13,
       "date": "2026-03-29",
       "node": "NODE-M",
-      "title": "Sentinel Phase 1 — Multi-repo deployment",
+      "title": "Sentinel Phase 1 \u2014 Multi-repo deployment",
       "work_packages": [
         "WP-0: Repo migration to huanlongAI org (16 repos)",
-        "WP-1.5: tzhOS caller template (119-line inline → 25-line reusable)",
+        "WP-1.5: tzhOS caller template (119-line inline \u2192 25-line reusable)",
         "WP-2: D-4~D-6 precheck scripts (directory, capability-source, brand-token)",
-        "WP-3: LLM review layer — real Claude API integration",
+        "WP-3: LLM review layer \u2014 real Claude API integration",
         "WP-4: Batch deployment to all 16 huanlongAI repos"
       ],
       "summary": "Deployed Consistency Sentinel CI/CD across entire huanlongAI org. Hub-and-spoke architecture: sentinel-shared (public) hosts reusable workflow + scripts; each repo has ~25-line caller + .sentinel/config.yaml. Four config profiles: governance, infra, app, library. Six deterministic prechecks (D-1~D-6) + LLM review layer with graceful degradation.",
@@ -33,7 +33,7 @@
       "id": 14,
       "date": "2026-03-29",
       "node": "NODE-M",
-      "title": "Custom Skills — sentinel-ops & governance-workflow",
+      "title": "Custom Skills \u2014 sentinel-ops & governance-workflow",
       "work_packages": [
         "sentinel-ops skill: Sentinel CI/CD operational knowledge base (313 lines, ~2900 tokens)",
         "governance-workflow skill: Governance automation workflows (231 lines, ~2050 tokens)"
@@ -51,6 +51,32 @@
         "assessment": "No negative impact on Harness Engineering context budget"
       },
       "next_steps": ["WP-5: Crystallization automation", "WP-6: Governance doc alignment"]
+    },
+    {
+      "id": 15,
+      "date": "2026-03-29",
+      "node": "NODE-M",
+      "title": "WP-6: Governance doc alignment",
+      "work_packages": [
+        "WP-6.1: CONSEN-SPEC-001 v1.0\u2192v1.1 (8 targeted updates)",
+        "WP-6.2: REPO-MAP-001 v1.0 (new, 16-repo directory)",
+        "WP-6.3: CLAUDE.md Sentinel section across all repos + sentinel-shared CLAUDE.md"
+      ],
+      "summary": "Aligned all governance documents with Phase 1 deployment reality. CONSEN-SPEC updated with hub-and-spoke architecture, 16-repo scope, 4 profiles, graceful degradation, implementation constraints, and Phase 0/1 completion markers. New REPO-MAP provides authoritative org-level repo directory. All repo CLAUDE.md files confirmed to include Sentinel section. sentinel-shared got its own CLAUDE.md.",
+      "artifacts": [
+        "tzhOS/CONSEN-SPEC-001.md v1.1 (0870889)",
+        "tzhOS/REPO-MAP.md v1.0 (0870889)",
+        "tzhOS/CHANGELOG.md updated",
+        "sentinel-shared/CLAUDE.md (ed9f432)"
+      ],
+      "key_changes": [
+        "\u00a74.2: 8 repos \u2192 16 repos (4 profile groups)",
+        "\u00a76.1a: New hub-and-spoke architecture section",
+        "\u00a76.2: claude-sonnet-4-5 \u2192 claude-sonnet-4-6 + graceful degradation",
+        "\u00a73.3: Implementation constraints (pipefail/git diff/YAML parsing)",
+        "\u00a77: Phase 0+1 marked complete, Phase 1.5 proposed"
+      ],
+      "next_steps": ["WP-5: Crystallization automation (Phase 1.5)"]
     }
   ]
 }
