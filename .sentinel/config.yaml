@@ -1,0 +1,15 @@
+sentinel_version: "1.0"
+repo_type: governance
+enabled_dimensions:
+  - software_engineering
+  - governance_process
+  - strategic_alignment
+governance_files: []
+cascade_map: {}
+llm:
+  model: "claude-sonnet-4-6"
+  max_output_tokens: 4096
+  confidence_threshold: 0.7
+  checks:
+    - "GPC-003"
+    - "SAC-004"
