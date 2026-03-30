@@ -12,12 +12,12 @@ Automates governance processes for the huanlongAI organization, centered on the 
 The governance framework has a clear authority chain:
 
 ```
-00-CHARTER.md          ← Constitutional document, highest authority
-  ├── MIRA-001.md      ← Mission, Identity, Role Architecture
-  ├── SAAC-001.md      ← Strategic Architecture & Alignment Charter
-  ├── CONSEN-SPEC-001.md ← Consistency Sentinel specification
-  ├── BOOTSTRAP.md     ← Bootstrap protocol
-  └── CONTEXT.md       ← Living context document, updated frequently
+00-CHARTER.md          <- Constitutional document, highest authority
+  +-- MIRA-001.md      <- Mission, Identity, Role Architecture
+  +-- SAAC-001.md      <- Strategic Architecture & Alignment Charter
+  +-- CONSEN-SPEC-001.md <- Consistency Sentinel specification
+  +-- BOOTSTRAP.md     <- Bootstrap protocol
+  +-- CONTEXT.md       <- Living context document, updated frequently
 ```
 
 **Key rule**: Changes to higher-authority documents cascade downward. MIRA changes may require updates to SAAC, BOOTSTRAP, CONTEXT, and CONSEN-SPEC. This is enforced by D-3 (cascade precheck) in the Sentinel system.
@@ -55,7 +55,7 @@ Specs (MIRA, SAAC, CONSEN-SPEC, etc.) follow a versioning lifecycle:
 **Sign-off process**:
 1. Draft changes in a branch
 2. Sentinel CI runs all checks (D-1~D-6 + LLM review)
-3. Review cascade impacts — which downstream docs need updates?
+3. Review cascade impacts -- which downstream docs need updates?
 4. Update `version:` field in the spec frontmatter
 5. Update CHANGELOG.md with version bump entry
 6. Merge to main
@@ -80,12 +80,12 @@ cascade_map:
     - "BOOTSTRAP.md"
 ```
 
-When a source file is modified, D-3 checks that all target files in the cascade exist. This is a structural check — it ensures awareness, not that targets were also modified (that's a future enhancement).
+When a source file is modified, D-3 checks that all target files in the cascade exist. This is a structural check -- it ensures awareness, not that targets were also modified (that's a future enhancement).
 
 **Manual cascade workflow**: When modifying a high-authority document:
 1. Run `git diff` to identify what changed
 2. Review cascade_map for affected downstream documents
-3. Assess each downstream doc — does it reference the changed content?
+3. Assess each downstream doc -- does it reference the changed content?
 4. Update downstream docs as needed
 5. Document cascade rationale in commit message
 
@@ -128,27 +128,28 @@ Session memory is stored in Obsidian for long-term recall:
 
 **Content structure**:
 ```markdown
-# Session: <topic>
-Date: YYYY-MM-DD
-Node: NODE-M / NODE-C
+---
+date: YYYY-MM-DD
+node: NODE-M
+session: <id>
+title: <topic>
+status: completed|in_progress
+tags: [sentinel, governance, ...]
+---
 
-## Objectives
-- ...
+# Session <id>: <topic>
 
-## Work Completed
-- ...
-
-## Key Decisions
-- ...
-
-## Technical Notes
-- ... (gotchas, debugging insights, architecture decisions)
-
-## Next Steps
-- ...
+## Work Packages Completed
+## Critical Discoveries (if any)
+## Commits This Session (table format)
+## E2E Results
+## Architecture (code block with flow diagram)
+## Status
 ```
 
 **Sync triggers**: End of significant work session, major milestone, or context window approaching limit. Write the session note capturing the essential knowledge for future recall.
+
+**Language rule**: Obsidian session notes MUST be written in Chinese with English technical term translations in parentheses.
 
 ## Governance Files Inventory (tzh-Harness)
 
@@ -183,7 +184,7 @@ Each node (NODE-M, NODE-C, etc.) has Write-Owner privileges for specific repos. 
 Checks referenced in governance workflows:
 
 | ID | Dimension | Description |
-|----|-----------|-------------|
+|----|-----------|------------|
 | GPC-003 | Governance Process | Governance process compliance |
 | SAC-004 | Strategic Alignment | Strategic alignment compliance |
 | DBC-002 | Design/Brand | Design and brand compliance |
@@ -199,6 +200,8 @@ gov(spec): MIRA-001 v1.1 <description>   # Spec version bump
 gov(cascade): update downstream from MIRA # Cascade propagation
 ci(sentinel): deploy/update sentinel      # Sentinel CI changes
 doc(governance): <description>            # Documentation updates
+doc(progress): Session NN <description>   # PROGRESS.json update
+doc(skill): <skill-name> <description>    # Skill knowledge update
 ```
 
 ## Common Governance Scenarios
@@ -221,11 +224,107 @@ doc(governance): <description>            # Documentation updates
 ### Amending a Foundational Spec
 1. Create a branch
 2. Make the changes
-3. Run cascade analysis — identify all downstream impacts
+3. Run cascade analysis -- identify all downstream impacts
 4. Update all affected downstream documents
 5. Bump version in spec frontmatter
 6. Update CHANGELOG.md
 7. Push and let Sentinel CI validate
-8. Review Sentinel results — all D-checks should pass
+8. Review Sentinel results -- all D-checks should pass
 9. If LLM layer flags concerns, address them
 10. Merge and record ruling if needed
+
+## Phase 2 Additions
+
+### Crystallization Automation (tzhOS: crystallization.yml)
+
+Automates CONSEN-SPEC S5.2 ruling crystallization:
+- Trigger: workflow_dispatch with 6 inputs (ruling_id, ruling_title, ruling_scope, ruling_decision, ruling_rationale, ruling_impact)
+- Process: Claude API drafts RULINGS.md entry + CHANGELOG.md update
+- Fallback: Template-based entry if LLM fails
+- Output: Commits to main with gov(ruling) prefix
+
+### Matrix Auto-Update on Ruling Merge
+
+When a ruling PR merges in tzhOS with gov(ruling) in the title:
+1. ruling-hook.yml detects the merge event
+2. Extracts matrix_change from PR body (after ## Matrix Change heading)
+3. Base64-encodes and dispatches to sentinel-shared/matrix-updater.yml
+4. LLM drafts updated sentinel-matrix.yaml using Claude API
+5. Creates a PR on sentinel-shared for human review
+6. If LLM fails, creates a manual-update issue instead
+
+This closes the loop: governance ruling -> automated matrix configuration update.
+
+### PROGRESS.json Session Schema (Updated)
+
+Sessions now include additional fields:
+```json
+{
+  "id": 22,
+  "date": "2026-03-30",
+  "node": "NODE-M",
+  "title": "...",
+  "work_packages": ["WP-4A-1: ..."],
+  "summary": "...",
+  "artifacts": ["repo/path (commit_sha)"],
+  "architecture": { "trigger": "...", "flow": "..." },
+  "key_decisions": ["..."],
+  "blockers": [],
+  "status": "completed",
+  "next_steps": ["..."]
+}
+```
+
+### Cross-Repo Governance Event Flow (Updated with Phase 4)
+
+```
+tzhOS ruling PR merge
+  -> ruling-hook.yml (tzhOS)
+  -> workflow_dispatch to matrix-updater.yml (sentinel-shared)
+  -> Claude API drafts sentinel-matrix.yaml update
+  -> PR created on sentinel-shared
+  -> Human reviews and merges
+  -> Push triggers cascade-verify.yml (sentinel-shared)
+  -> Fan-out to all 16 downstream repos
+  -> Each repo: escalate.sh v2 grades severity (P0-P3)
+  -> STEP_SUMMARY JSON with SENTINEL_ESCALATION markers
+  -> Dashboard aggregates health next morning (08:00 UTC)
+  -> Trend detection: NEW/RECOVERED/PERSISTENT failures
+  -> Smart alert: issue only on NEW failures
+  -> Stale nudge: auto-dispatch repos silent >72h
+  -> Caller-sync: weekly drift check + auto-PR
+```
+
+## Phase 4 Additions (Session 22)
+
+### Severity-Aware Governance
+
+Phase 4 introduced P0-P3 severity grading in escalate.sh v2. For governance repos, this has special implications:
+
+- **D-1 (changelog) failure on governance repo = P0**: Blocks merge, triggers critical notification
+- **LLM:GPC-003 or LLM:SAC-004 failure on governance repo = P0**: Same critical treatment
+- **All other governance check failures = P1**: Blocks merge but lower severity
+
+This means governance spec changes are held to the highest standard. A spec amendment that forgets CHANGELOG.md will be caught as P0 critical.
+
+### Notification Pipeline for Governance Events
+
+```
+Sentinel CI on governance repo
+  -> escalate.sh v2 (P0 for governance-critical checks)
+  -> STEP_SUMMARY JSON (SENTINEL_ESCALATION markers)
+  -> workflow_run event
+  -> Super-Founder Hummingbird HTTP Server
+  -> FeishuCardBuilder
+  -> Feishu #eng-notify group
+```
+
+Sentinel does NOT directly integrate with Feishu. The Super-Founder app (already delivered in its Phase 5) handles the workflow_run -> Feishu interactive card conversion.
+
+### Cross-Sandbox File Transfer (Cowork)
+
+When governance workflow automation needs to transfer files between Cowork sandbox and Mac (e.g., for skill updates, workflow deployments):
+
+**Preferred method** (Session 22): Write to Cowork Workspace mount `/sessions/.../mnt/Workspace/` which maps to `/Users/tzh/Workspace/` on Mac. Then use osascript `cp` to final destination.
+
+This replaces the unreliable base64-over-osascript transfer which silently corrupts large files.
