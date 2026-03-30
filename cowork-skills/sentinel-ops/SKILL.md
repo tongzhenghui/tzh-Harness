@@ -549,3 +549,53 @@ For deploying workflow files from Cowork sandbox to GitHub:
 5. git clone -> cp -> git add -> git commit -> git push
 
 **Preferred transfer method** (Session 22): Workspace mount avoids base64 corruption issues with large files. The old base64-over-osascript pattern silently corrupts large payloads (gzip CRC errors). Always use Workspace mount for cross-sandbox transfer.
+
+### GitHub Trigger Indexer: type:choice / type:boolean Causes 422
+
+1. workflow_dispatch inputs with `type: choice` or `type: boolean` can cause GitHub's trigger indexer to silently fail
+2. Symptom: file deploys correctly, `gh api` confirms content, but `gh workflow run` returns 422 "Workflow does not have 'workflow_dispatch' trigger"
+3. Renaming the file does NOT fix this -- the indexer still fails on the new file
+4. Fix: Use `type: string` for ALL workflow_dispatch inputs
+5. For choice-like inputs, validate in the script body with `case` statements instead
+6. Confirmed in Session 22 after 4 indexer failures (3× non-ASCII, 1× type:choice/boolean)
+
+## Phase 4B+: LLM Auto-Remediation (sentinel-autofix.yml)
+
+### Architecture
+
+```
+workflow_dispatch (target_repo, check_id, dry_run)
+  -> checkout sentinel-shared
+  -> clone target repo (CASCADE_TOKEN)
+  -> run precheck script (D-2 or D-6)
+  -> if violations: auto-fix.sh (Claude API)
+  -> extract sed commands (security filter: grep '^sed -i ')
+  -> if dry_run=false: apply patch, create branch, push, create PR
+  -> step summary (always)
+```
+
+### auto-fix.sh Script (scripts/auto-fix.sh)
+
+- Input: check_id (D-2|D-6), result_json, repo_root
+- D-2 mode: Extracts forbidden terms + line context, asks Claude for sed replacements
+- D-6 mode: Extracts hardcoded colors, asks Claude to map to guanghe design tokens
+- Security: Only `grep -E '^sed -i '` lines extracted from LLM output (no arbitrary code execution)
+- Fallback: If no API key or LLM fails, generates violation report only (no patch)
+- Output: auto-fix-patch.sh (executable sed), auto-fix-summary.md (review report)
+
+### Workflow File: .github/workflows/sentinel-autofix.yml
+
+- ALL inputs are `type: string` (due to trigger indexer bug)
+- Uses CASCADE_TOKEN for cross-repo operations
+- Uses ANTHROPIC_API_KEY for Claude API calls
+- Dedup: Checks for existing open auto-fix PR before creating new one
+- Commit message: `fix(sentinel): auto-fix $CHECK violations ($N files)`
+
+### Design Tokens (D-6 guanghe mapping)
+
+```
+Swift:   Color.ghPrimary, Color.ghBackground, ...
+CSS:     var(--gh-primary), var(--gh-background), ...
+React:   tokens.primary, tokens.background, ...
+Native:  GHColor.primary, GHColor.background, ...
+```
