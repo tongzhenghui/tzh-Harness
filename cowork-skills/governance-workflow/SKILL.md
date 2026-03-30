@@ -328,3 +328,26 @@ When governance workflow automation needs to transfer files between Cowork sandb
 **Preferred method** (Session 22): Write to Cowork Workspace mount `/sessions/.../mnt/Workspace/` which maps to `/Users/tzh/Workspace/` on Mac. Then use osascript `cp` to final destination.
 
 This replaces the unreliable base64-over-osascript transfer which silently corrupts large files.
+
+### Dashboard v2 Governance Integration (Phase 5)
+
+Dashboard v2 (dashboard.yml) now produces structured escalation JSON for governance-aware downstream consumers:
+
+```json
+{
+  "type": "dashboard",
+  "severity": "P1",
+  "health_pct": 93,
+  "total": 16, "pass": 15, "fail": 1, "stale": 0,
+  "new_failures": "tzh-Harness",
+  "autofix_targets": "tzh-Harness:D-2"
+}
+```
+
+This JSON is wrapped in `SENTINEL_ESCALATION_BEGIN/END` HTML comment markers in STEP_SUMMARY, parseable by Super-Founder FeishuCardBuilder for Feishu notifications.
+
+Dashboard v2 auto-triggers sentinel-autofix.yml for D-2/D-6 violations (dry_run=true by default). This creates a closed-loop governance flow: detect → fix → review PR → merge.
+
+### GitHub Workflow Input Type Restriction
+
+CRITICAL: All `workflow_dispatch` inputs MUST use `type: string`. The `type: choice` and `type: boolean` types cause GitHub's trigger indexer to silently fail (HTTP 422). Validate input values in script body with `case` statements instead.
