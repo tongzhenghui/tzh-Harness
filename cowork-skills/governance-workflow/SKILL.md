@@ -105,7 +105,7 @@ When a source file is modified, D-3 checks that all target files in the cascade 
       "work_packages": ["WP-1", "WP-2", "WP-3", "WP-4"],
       "summary": "...",
       "artifacts": ["sentinel-shared repo", "16-repo deployment"],
-      "decisions": ["R-xxx"],
+      "decisions": ["R-001"],
       "next_steps": ["WP-5", "WP-6"]
     }
   ]
