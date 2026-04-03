@@ -1,6 +1,6 @@
 # ============================================================================
-# Consistency Sentinel — MIRA P-2 一致性原则 CI 门禁
-# Phase 1: Caller template → huanlongAI/sentinel-shared reusable workflow
+# Consistency Sentinel -- MIRA P-2 Consistency Gate
+# Phase 1: Caller template -> huanlongAI/sentinel-shared reusable workflow
 # NOTE: permissions MUST be in caller, not in reusable workflow
 # ============================================================================
 name: Consistency Sentinel
@@ -15,10 +15,10 @@ on:
   workflow_dispatch:
     inputs:
       skip_llm:
-        description: '跳过 LLM 审查层'
+        description: 'Skip LLM review layer'
         required: false
         default: 'false'
-        type: boolean
+        type: string
 
 permissions:
   contents: read
