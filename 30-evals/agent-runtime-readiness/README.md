@@ -1,6 +1,6 @@
 # Agent Runtime Readiness Eval｜领域智能体运行就绪评测
 
-> 版本：v0.3 | 日期：2026-04-23 | 状态：ACTIVE
+> 版本：v0.4 | 日期：2026-04-23 | 状态：ACTIVE
 > 上游治理：tzhOS `40-AGENT-MANAGER/AGENT-RUNTIME-OPS-RUNBOOK.md`
 > 定位：Eval asset（评测资产），用于把领域智能体运行态从“人工确认”沉淀为可复用验收记录。
 
@@ -42,7 +42,7 @@
 | 检查项 | 合格标准 |
 |---|---|
 | `dahuizi_health` | `/health` 返回 `status=ok`、`agent.id=dahuizi`、`queueSize=0` 或有明确任务解释 |
-| `dahuizi_master_brain_smoke` | HeiyuCode Claude 主脑最小调用返回约定字符串；必须验证实际模型调用，不得只检查静态配置 |
+| `dahuizi_master_brain_smoke` | HeiyuCode Claude 主脑最小调用返回约定字符串；优先使用 runtime 内置 `npm run smoke:master-brain`，必须验证实际模型调用，不得只检查静态配置 |
 | `dahuizi_codex_runner_auth` | Codex Runner 订阅登录态有效；需要人工授权时必须标记 `WARN` 或 `FAIL` |
 | `dahuizi_runtime_tests` | `tech-cofounder-bot` 当前测试套件 fail 为 0 |
 | `dahuizi_commit` | runtime clone commit 与已推送真源一致，无未解释源码漂移 |
@@ -71,7 +71,7 @@
 - 没有 fresh verification evidence（新鲜验证证据）。
 - 只检查 health，没有检查模型通道或登录态。
 - 只检查 Codex Runner 登录态，没有验证大辉子 HeiyuCode Claude 主脑最小调用。
-- 直接 `source .env` 读取 key；smoke 必须使用结构化解析，避免 shell 特殊字符污染验证。
+- 直接 `source .env` 读取 key；smoke 必须使用 runtime 内置命令或等价结构化解析，避免 shell 特殊字符污染验证。
 - 节点本地治理 clone 落后主线且未解释。
 - 把业务上下文重型 smoke 当作日常心跳反复运行。
 - 在治理文档中硬写当前模型快照作为长期事实。
