@@ -17,8 +17,8 @@ on:
       skip_llm:
         description: 'Skip LLM review layer'
         required: false
-        default: 'false'
-        type: string
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -31,4 +31,4 @@ jobs:
     secrets:
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
     with:
-      skip_llm: ${{ github.event.inputs.skip_llm || 'false' }}
+      skip_llm: ${{ github.event_name == 'workflow_dispatch' && inputs.skip_llm && 'true' || 'false' }}
