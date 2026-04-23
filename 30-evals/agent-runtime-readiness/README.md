@@ -1,6 +1,6 @@
 # Agent Runtime Readiness Eval｜领域智能体运行就绪评测
 
-> 版本：v0.1 | 日期：2026-04-23 | 状态：ACTIVE
+> 版本：v0.2 | 日期：2026-04-23 | 状态：ACTIVE
 > 上游治理：tzhOS `40-AGENT-MANAGER/AGENT-RUNTIME-OPS-RUNBOOK.md`
 > 定位：Eval asset（评测资产），用于把领域智能体运行态从“人工确认”沉淀为可复用验收记录。
 
@@ -42,7 +42,8 @@
 | 检查项 | 合格标准 |
 |---|---|
 | `dahuizi_health` | `/health` 返回 `status=ok`、`agent.id=dahuizi`、`queueSize=0` 或有明确任务解释 |
-| `dahuizi_auth` | Codex Runner 订阅登录态有效；需要人工授权时必须标记 `WARN` 或 `FAIL` |
+| `dahuizi_master_brain_auth` | Claude first-party Max 登录态有效，且 `opus` alias 最小调用返回约定字符串；状态可见但调用失败仍判 `FAIL` |
+| `dahuizi_codex_runner_auth` | Codex Runner 订阅登录态有效；需要人工授权时必须标记 `WARN` 或 `FAIL` |
 | `dahuizi_runtime_tests` | `tech-cofounder-bot` 当前测试套件 fail 为 0 |
 | `dahuizi_commit` | runtime clone commit 与已推送真源一致，无未解释源码漂移 |
 
@@ -69,6 +70,7 @@
 
 - 没有 fresh verification evidence（新鲜验证证据）。
 - 只检查 health，没有检查模型通道或登录态。
+- 只检查 Codex Runner 登录态，没有验证大辉子 Claude 主脑 first-party Max 授权和 `opus` alias 最小调用。
 - 节点本地治理 clone 落后主线且未解释。
 - 把业务上下文重型 smoke 当作日常心跳反复运行。
 - 在治理文档中硬写当前模型快照作为长期事实。
@@ -86,7 +88,7 @@
 每行一条 JSON：
 
 ```json
-{"eval_id":"agent-runtime-readiness-YYYYMMDD-NN","ts":"YYYY-MM-DDTHH:mm:ss+08:00","operator":"codex-desktop","governance_commit":"<sha>","verdict":"PASS","agents":{"dahuizi":{"health":"PASS","auth":"PASS","runtime_tests":"PASS"},"baozouhui":{"health":"PASS","light_smoke":"PASS","governance_sync":"PASS"}},"notes":"brief summary"}
+{"eval_id":"agent-runtime-readiness-YYYYMMDD-NN","ts":"YYYY-MM-DDTHH:mm:ss+08:00","operator":"codex-desktop","governance_commit":"<sha>","verdict":"PASS","agents":{"dahuizi":{"health":"PASS","master_brain_auth":"PASS","codex_runner_auth":"PASS","runtime_tests":"PASS"},"baozouhui":{"health":"PASS","light_smoke":"PASS","governance_sync":"PASS"}},"notes":"brief summary"}
 ```
 
 记录中不得包含 API key、access token、refresh token、cookie、完整 prompt secret 或 private callback URL。
