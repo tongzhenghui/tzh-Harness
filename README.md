@@ -12,6 +12,12 @@ Harness Engineering 的方法论标准仓库，定义 AI 驱动研发的：
 - **执行标准**：Trace / Evals / GC 验证体系
 - **评测体系**：黄金样本、验收标准、运行记录格式
 
+当前评测入口：
+
+- `30-evals/README.md`：评测资产索引。
+- `30-evals/agent-runtime-readiness/README.md`：大辉子 / 暴走辉运行就绪评测。
+- `30-evals/toolkit-usage/README.md`：Toolkit 使用统计。
+
 ## 与唤龙超级工厂的关系
 
 - `tzh-Harness`：方法论标准（tzhOS 治理视角），定义"怎么做研发"
