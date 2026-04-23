@@ -12,6 +12,38 @@
 
 > 新 Case Note 从这里开始追加。编号格式：CN-NNN。
 
+### CN-004 — 大辉子 / 暴走辉逻辑智能体资产化与运行验收收口
+
+> 日期：2026-04-23 | 节点：NODE-A (Codex Desktop) + NODE-C + NODE-D | 场景：Node-C / Node-D 从物理节点口径升级为可管理的逻辑智能体资产
+
+**背景：** 创始人要求将 Node-C 命名为“大辉子”、Node-D 命名为“暴走辉”，并明确这套设计要可进化、可管理、可资产化，放入 tzhOS 或 tzh-Harness 进行治理和迭代。
+
+**闭环路径：** 先在 tzhOS 中登记逻辑智能体身份与 Node 绑定解耦 → 对齐大辉子 Codex Runner 与 CCGG 运行边界 → 对齐暴走辉 OpenClaw / `biz-governor` 运行态 → 写运行运维手册 → 写 tzh-Harness readiness eval → 补目录索引 → 同步 NODE-D 只读治理 clone → 更新会话记忆。
+
+**踩坑记录：**
+
+| 序号 | 问题 | 解决 | 可复用 |
+|------|------|------|--------|
+| 1 | 容易把 NODE-C / NODE-D 当成永久身份 | 引入 `dahuizi` / `baozouhui` 逻辑智能体资产，Node 只是当前承载位点 | 是 |
+| 2 | smoke 成本差异大 | 将 light smoke 与 business / CCGG heavy acceptance 分层 | 是 |
+| 3 | 运行态验收散落在对话和日志里 | 在 tzh-Harness 新增 `agent-runtime-readiness` eval 与 JSONL 记录 | 是 |
+| 4 | 资产存在但入口不明显 | 为 `40-AGENT-MANAGER` 与 `30-evals` 增加 README 索引 | 是 |
+| 5 | 远程节点上下文可能落后 | NODE-D 保持 tzhOS 只读 clone 并通过 fast-forward 同步到最新治理 commit | 是 |
+
+**关键观察：**
+
+1. **逻辑身份必须先于物理绑定**：大辉子 / 暴走辉是长期资产，NODE-C / NODE-D 是运行承载；迁移节点时应改绑定，不改身份。
+2. **治理真源与评测资产要分层**：tzhOS 定义身份、职责和升级条件；tzh-Harness 定义 readiness eval 和记录格式。
+3. **运行可用不等于可管理**：必须同时有 health、auth、smoke、测试、治理 clone 同步和 Founder escalation 条件。
+4. **入口索引是资产化的一部分**：没有目录索引，后续 agent 即使知道文件存在，也容易绕过正确入口。
+
+**Pattern 候选：**
+- 「逻辑智能体资产化三层模型」：身份真源（tzhOS）→ 运行手册（tzhOS）→ readiness eval（tzh-Harness）。待第二个独立智能体群案例确认。
+
+**已抽象：** PAT-002（远程节点 Git 化同步）
+
+---
+
 ### CN-003 — Node-C Bot v3.3→v3.4 全流程：编码-审计-修复流水线首次实践
 
 > 日期：2026-04-07 | 节点：NODE-M (Cowork) + NODE-A (CLI) + NODE-C (部署) | 场景：tech-cofounder-bot 两版升级
@@ -39,9 +71,8 @@
 
 **Pattern 候选：**
 - 「编码-审计-修复」三阶段流水线（待第二个案例确认）
-- 「Git 化远程节点」一次性成本换长期效率（待第二个节点确认）
 
-**已抽象：** 否（两个候选均为首次实践）
+**已抽象：** PAT-002（远程节点 Git 化同步）
 
 ---
 
@@ -117,6 +148,23 @@
 **注意事项：** “文档在哪里”本身需要一次搜索。Cowork 场景下，工具描述就是文档（如 `present_files` 的描述直接说明了 `.skill` 安装机制）。
 
 **来源：** CN-001（Global Instructions 的 `<HARD-GATE>` XML 标签无效，读 prompting 文档后用 Good/Bad 示例解决）、CN-002（猜测 Skills 安装路径多次失败，读 `present_files` 工具描述后一次解决）
+
+---
+
+### PAT-002 · 远程节点 Git 化同步
+
+**场景：** 远程节点需要长期运行 bot、agent、gateway 或只读治理上下文，且这些节点会被主控节点异步调度。
+
+**做法：**
+1. 远程节点保留明确的 Git clone，而不是依赖散落文件或一次性 SCP。
+2. runtime 仓库和治理只读 clone 分开：服务代码按 runtime 仓库更新，治理上下文按只读 clone fast-forward。
+3. 每次运行验收记录当前 commit，避免“服务能跑但上下文过期”。
+4. 本地 runtime 噪声必须与治理真源隔离，不得把 `.openclaw/`、session、缓存、私有配置提交回治理仓。
+5. 如果 clone 无法 fast-forward，停止自动继续并升级处理。
+
+**注意事项：** Git 化同步不是让远程节点获得治理写权。它只解决版本可追踪、上下文可恢复和部署可复现问题。
+
+**来源：** CN-003（Node-C 从无 `.git` 旧目录改为 git clone，部署效率和可追踪性提升）、CN-004（NODE-D tzhOS 只读 clone fast-forward 到最新治理 commit，暴走辉可读取最新运行手册与索引）
 
 ---
 
