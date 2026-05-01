@@ -1,7 +1,7 @@
 # Judgment Harness Observation Eval｜判断回路观察评测
 
-> 版本：v0.1 | 日期：2026-05-01 | 状态：ACTIVE-DRAFT
-> 上游治理：tzhOS `ai/JUDGMENT-HARNESS.md` v0.1.1 / AI-R0005
+> 版本：v0.1.1 | 日期：2026-05-01 | 状态：ACTIVE-DRAFT
+> 上游治理：tzhOS `ai/JUDGMENT-HARNESS.md` v0.1.2 / AI-R0005
 > 定位：Eval asset（评测资产），用于记录 Judgment Harness 实战案例的 24h / 72h / 7d 观察。
 
 ---
@@ -29,12 +29,14 @@
 | `ts` | 是 | ISO 8601 时间戳 |
 | `operator` | 是 | 记录者，例如 `codex-desktop` |
 | `tzhos_commit` | 是 | 对应 tzhOS 治理 commit |
-| `method_version` | 是 | Judgment Harness 方法版本，例如 `v0.1.1` |
+| `method_version` | 是 | Judgment Harness 方法版本，例如 `v0.1.2` |
 | `source_scope` | 是 | 来源范围，例如 `current-thread`、`cross-conversation` |
 | `observation_status` | 是 | `pending` / `observing` / `observed` / `blocked` |
 | `classification` | 是 | `facts` / `assumptions` / `judgments` / `preferences` 四类分离 |
 | `checkpoints` | 是 | `h24` / `h72` / `d7` 三个观察节点 |
 | `verdict` | 是 | `INSUFFICIENT_EVIDENCE` / `PASS` / `WARN` / `FAIL` |
+
+历史记录中的 `method_version` 保留记录创建时使用的方法版本，不随当前上游版本指针回写。
 
 ---
 
@@ -82,7 +84,7 @@
 每行一条 JSON：
 
 ```json
-{"eval_id":"jh-observation-YYYYMMDD-NN","case_id":"JH-002","ts":"YYYY-MM-DDTHH:mm:ss+08:00","operator":"codex-desktop","tzhos_commit":"<sha>","method_version":"v0.1.1","source_scope":"cross-conversation","observation_status":"pending","classification":{"facts":[],"assumptions":[],"judgments":[],"preferences":[]},"checkpoints":{"h24":{"status":"pending","pass_signals":[],"drift_signals":[],"founder_intervention":null},"h72":{"status":"pending","pass_signals":[],"drift_signals":[],"founder_intervention":null},"d7":{"status":"pending","pass_signals":[],"drift_signals":[],"founder_intervention":null}},"verdict":"INSUFFICIENT_EVIDENCE","notes":"brief summary"}
+{"eval_id":"jh-observation-YYYYMMDD-NN","case_id":"JH-002","ts":"YYYY-MM-DDTHH:mm:ss+08:00","operator":"codex-desktop","tzhos_commit":"<sha>","method_version":"v0.1.2","source_scope":"cross-conversation","observation_status":"pending","classification":{"facts":[],"assumptions":[],"judgments":[],"preferences":[]},"checkpoints":{"h24":{"status":"pending","pass_signals":[],"drift_signals":[],"founder_intervention":null},"h72":{"status":"pending","pass_signals":[],"drift_signals":[],"founder_intervention":null},"d7":{"status":"pending","pass_signals":[],"drift_signals":[],"founder_intervention":null}},"verdict":"INSUFFICIENT_EVIDENCE","notes":"brief summary"}
 ```
 
 记录中不得包含 API key、access token、refresh token、cookie、完整 prompt secret、private callback URL、未公开客户资料或未经确认的跨对话业务细节。
