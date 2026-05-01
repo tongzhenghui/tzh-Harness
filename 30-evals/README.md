@@ -1,6 +1,6 @@
 # Evals｜评测资产入口
 
-> 版本：v0.1 | 日期：2026-04-23 | 状态：ACTIVE
+> 版本：v0.2 | 日期：2026-05-01 | 状态：ACTIVE
 > 定位：Evaluation assets index（评测资产索引）
 
 ---
@@ -17,6 +17,7 @@
 
 | 资产 | 用途 | 记录 |
 |---|---|---|
+| `judgment-harness-observation/README.md` | Judgment Harness 真实任务 24h / 72h / 7d 观察评测 | `judgment-harness-observation/logs/observation-log.jsonl` |
 | `agent-runtime-readiness/README.md` | 大辉子 / 暴走辉运行就绪评测 | `agent-runtime-readiness/logs/readiness-log.jsonl` |
 | `toolkit-usage/README.md` | Cowork Toolkit 使用统计 | `toolkit-usage/logs/usage-log.jsonl` |
 
