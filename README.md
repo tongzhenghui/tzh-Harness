@@ -15,6 +15,7 @@ Harness Engineering 的方法论标准仓库，定义 AI 驱动研发的：
 当前评测入口：
 
 - `30-evals/README.md`：评测资产索引。
+- `30-evals/judgment-harness-observation/README.md`：Judgment Harness 真实任务 24h / 72h / 7d 观察评测。
 - `30-evals/agent-runtime-readiness/README.md`：大辉子 / 暴走辉运行就绪评测。
 - `30-evals/toolkit-usage/README.md`：Toolkit 使用统计。
 
